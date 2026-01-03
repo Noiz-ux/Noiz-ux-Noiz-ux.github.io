@@ -1,0 +1,492 @@
+:root {
+    --bg-color: #F8F7F5;
+    --primary-color: #3D4A52;
+    --secondary-color: #8A9499;
+    --accent-color: #B89B72;
+    --text-dark: #2C2E30;
+    --text-light: #F8F7F5;
+}
+
+body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* 背景流体渐变效果 */
+body::before {
+    content: '';
+    position: fixed;
+    inset: -40%;
+    background:
+        radial-gradient(circle at 10% 20%, rgba(184, 155, 114, 0.45), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(61, 74, 82, 0.55), transparent 60%),
+        radial-gradient(circle at 50% 80%, rgba(138, 148, 153, 0.55), transparent 55%);
+    mix-blend-mode: multiply;
+    opacity: 0.45;
+    filter: blur(40px);
+    z-index: -1;
+    pointer-events: none;
+    animation: fluidMove 24s ease-in-out infinite alternate;
+}
+
+@keyframes fluidMove {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(-4%, 3%, 0) scale(1.05);
+    }
+    100% {
+        transform: translate3d(4%, -3%, 0) scale(1.08);
+    }
+}
+
+.font-serif-cn {
+    font-family: 'Noto Serif SC', serif;
+}
+
+.font-sans-cn {
+    font-family: 'Noto Sans SC', sans-serif;
+}
+
+.slide {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.slide.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+.navigation {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(61, 74, 82, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.nav-dot:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.2);
+}
+
+.nav-dot.active {
+    background-color: var(--accent-color);
+    border-color: var(--primary-color);
+    transform: scale(1.3);
+}
+
+/* 导航点悬停提示 */
+.nav-dot::after {
+    content: attr(data-title);
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(61, 74, 82, 0.95);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-50%) translateX(-10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+}
+
+.nav-dot::before {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid rgba(61, 74, 82, 0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-50%) translateX(-10px);
+    z-index: 1002;
+}
+
+.nav-dot:hover::after,
+.nav-dot:hover::before {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+.source-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+.source-link:hover {
+    color: var(--accent-color);
+}
+
+.source-text {
+    color: var(--secondary-color);
+    font-size: 0.75rem;
+    line-height: 1.6;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 1rem 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.chart-container.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.chart-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--accent-color);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chart-container:not(.loaded)::before {
+    opacity: 1;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.data-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-bg {
+    background-image: url('./cover_background.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.chapter-bg-1 {
+    background-image: url('./chapter1_aging.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.chapter-bg-2 {
+    background-image: url('./chapter2_marriage.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.chapter-bg-3 {
+    background-image: url('./chapter3_parenting.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.chapter-bg-4 {
+    background-image: url('./chapter4_policy.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.gradient-overlay {
+    background: linear-gradient(135deg, rgba(61, 74, 82, 0.85) 0%, rgba(138, 148, 153, 0.75) 100%);
+}
+
+.number-highlight {
+    color: var(--accent-color);
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+/* 音乐播放按钮样式 */
+.music-toggle {
+    position: fixed;
+    top: 2rem;
+    right: 5rem;
+    z-index: 1001;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(184, 155, 114, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.music-toggle:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 1);
+    border-color: var(--accent-color);
+    box-shadow: 0 6px 24px rgba(184, 155, 114, 0.3);
+}
+
+.music-toggle.playing {
+    background: rgba(184, 155, 114, 0.15);
+    border-color: var(--accent-color);
+    animation: musicPulse 2s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(184, 155, 114, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(184, 155, 114, 0.4);
+    }
+}
+
+.music-icon {
+    width: 28px;
+    height: 28px;
+    fill: var(--primary-color);
+    transition: fill 0.3s ease;
+}
+
+.music-toggle:hover .music-icon,
+.music-toggle.playing .music-icon {
+    fill: var(--accent-color);
+}
+
+.music-toggle .pause-icon {
+    display: none;
+}
+
+.music-toggle.playing .play-icon {
+    display: none;
+}
+
+.music-toggle.playing .pause-icon {
+    display: block;
+}
+
+/* 阅读进度条 */
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.05);
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.reading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+    width: 0%;
+    transition: width 0.1s ease-out;
+    box-shadow: 0 0 10px rgba(184, 155, 114, 0.5);
+}
+
+/* 滚动百分比显示 */
+.scroll-percentage {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(184, 155, 114, 0.3);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.scroll-percentage:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* 数据卡片3D效果增强 */
+.data-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.data-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.data-card:hover::before {
+    left: 100%;
+}
+
+.data-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-color);
+}
+
+.data-card:active {
+    transform: translateY(-4px) rotateX(1deg) rotateY(-1deg);
+    transition: transform 0.1s ease;
+}
+
+/* 打字机效果 */
+.typewriter-text {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+.typewriter-text::after {
+    content: '|';
+    color: var(--accent-color);
+    font-weight: bold;
+    animation: blink-caret 0.75s step-end infinite;
+    margin-left: 2px;
+}
+
+.typewriter-text.completed::after {
+    display: none;
+}
+
+@keyframes blink-caret {
+    from, to {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+/* 数字滚动动画 */
+.number-counter {
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    .navigation {
+        right: 1rem;
+    }
+    
+    .slide {
+        padding: 3rem 1rem;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+    
+    .music-toggle {
+        top: 1rem;
+        right: 4rem;
+        width: 48px;
+        height: 48px;
+    }
+    
+    .music-icon {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .data-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .scroll-percentage {
+        bottom: 1rem;
+        right: 1rem;
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .nav-dot::after {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+}
+
